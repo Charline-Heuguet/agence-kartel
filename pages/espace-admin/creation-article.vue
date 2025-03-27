@@ -307,6 +307,15 @@ onMounted(() => {
     if (isEditing.value) fetchArticle()
 })
 
+useHead({
+    title: 'Espace Admin - Création d\'article',
+    meta: [
+        {
+            name: 'description',
+            content: 'Créez un nouvel article!'
+        }
+    ]
+})
 </script>
 
 <style scoped>

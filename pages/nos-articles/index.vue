@@ -44,6 +44,15 @@ const scrollToCategory = (category: string) => {
   }
 };
 
+useHead({
+  title: 'Nos articles - Kartel',
+  meta: [
+    {
+      name: 'description',
+      content: 'Découvrez nos articles sur des sujets variés : art, musique, littérature, etc.'
+    }
+  ]
+});
 </script>
 
 <style scoped>

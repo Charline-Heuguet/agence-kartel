@@ -90,6 +90,15 @@
   </div>
 </template>
 <script>
+useHead({
+  title: 'L\'Agence Kartel',
+  meta: [
+    {
+      name: 'description',
+      content: 'Découvrez l\'agence Kartel, une association dédiée à la médiatisation et à la vulgarisation culturelle.'
+    }
+  ]
+});
 </script>
 
 <style scoped>

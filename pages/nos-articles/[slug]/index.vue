@@ -45,6 +45,16 @@ const route = useRoute();
 // explication: on cherche l'article qui a le même slug que celui passé en paramètre dans l'url
 // et on le stocke dans la variable article, puis on l'exploite dans le template
 const article = articles.find(a => a.slug === route.params.slug);
+
+useHead({
+    title: article ? article.title : 'Article introuvable',
+    meta: [
+        {
+            name: 'description',
+            content: article ? article.description : 'Cet article n\'existe pas.'
+        }
+    ]
+});
 </script>
 
 <style scoped>

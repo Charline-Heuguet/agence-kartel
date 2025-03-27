@@ -28,6 +28,16 @@ const spotifyUrls = [
   'https://open.spotify.com/embed/episode/1DzBCYMiULh3f21dzDLk5d?utm_source=generator',
   'https://open.spotify.com/embed/episode/3JNT7ucoSIkquwYGr1cdcC?utm_source=generator'
 ];
+
+useHead({
+  title: 'Podcast - Kartel',
+  meta: [
+    {
+      name: 'description',
+      content: 'Découvrez les podcasts captivants de Kartel ! Plongez dans des épisodes riches en découvertes, où vous explorerez des sujets fascinants et rencontrerez des passionnés.'
+    }
+  ]
+});
 </script>
 
 <style scoped>

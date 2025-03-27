@@ -1,5 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: 'Kartel', // default fallback title
+      meta: [
+        {
+          name: 'description',
+          content: 'Agence Kartel est une association dédiée à l\'exploration dynamique de la culture sous toutes ses formes'
+        }
+      ],
+      htmlAttrs: {
+        lang: 'fr',
+      },
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      ]
+    }
+  },
   vite: {
     server: {
       fs: {

@@ -47,7 +47,17 @@
     </div>
   </div>
 </template>
-
+<script setup>
+useHead({
+  title: 'Kartel',
+  meta: [
+    {
+      name: 'description',
+      content: 'Bienvenue sur la page d\'accueil de Kartel, votre passerelle vers une exploration dynamique de la culture sous toutes ses formes !'
+    }
+  ]
+})
+</script>
 <style scoped>
 a {
   color: #2c3e50

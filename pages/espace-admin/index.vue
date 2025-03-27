@@ -58,6 +58,15 @@ const deleteArticle = async (articleId: number) => {
   fetchArticles();
 };
 
+useHead({
+  title: 'Espace Admin - Liste des articles',
+  meta: [
+    {
+      name: 'description',
+      content: 'Liste des articles disponibles'
+    }
+  ]
+});
 </script>
 
 
