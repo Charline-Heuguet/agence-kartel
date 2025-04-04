@@ -1,5 +1,8 @@
 <template>
-  <h1> Liste des articles</h1>
+  <div class="admin-header">
+    <h1>Liste des articles</h1>
+    <button @click="handleLogout" class="logout-btn">Déconnexion</button>
+  </div>
   <div class="article-list">
     <ul>
       <li v-for="article in articles" :key="article.id">
@@ -22,10 +25,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'nuxt/app';
 
 // Utilisation du composable fourni par le module Supabase
 const supabase = useSupabaseClient();
 const articles = ref<any[]>([]);
+const router = useRouter();
 
 // Chargement des articles
 const fetchArticles = async () => {
@@ -65,6 +70,12 @@ const deleteArticle = async (articleId: number) => {
   fetchArticles();
 };
 
+// Fonction pour se déconnecter
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  router.push('/espace-admin/login');
+};
+
 
 useHead({
   title: 'Espace Admin - Liste des articles',
@@ -75,10 +86,31 @@ useHead({
     }
   ]
 });
+
+// Appliquer le middleware d'authentification
+definePageMeta({
+  middleware: ['admin-auth']
+});
 </script>
 
 
 <style scoped>
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .logout-btn {
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+}
 .article-list {
   width: 100%;
   margin-top: 16px;

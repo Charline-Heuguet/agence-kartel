@@ -375,6 +375,10 @@ useHead({
         }
     ]
 })
+// Appliquer le middleware d'authentification
+definePageMeta({
+  middleware: ['admin-auth']
+});
 </script>
 
 <style scoped>
