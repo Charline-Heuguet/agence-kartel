@@ -26,7 +26,6 @@
 
             <div class="form-group">
                 <label>Description</label>
-                <!-- <small class="info">✍️ La description doit être un résumé de votre article.</small> -->
                 <textarea placeholder="La description doit être un résumé de votre article."
                     v-model="articleForm.description" required></textarea>
             </div>
@@ -57,7 +56,19 @@
                 <label>Photos / images illustrants votre article</label>
                 <input type="file" multiple accept="image/*" @change="handleImageUpload">
                 <small>Photos / images illustrants votre article, 5 images max et pesant moins de 2Mo.</small>
-                <small>Vous pouvez les convertir en .webp sur <NuxtLink to="https://convertio.co/fr/jpg-webp/">Convertio</NuxtLink></small>
+                <small>Vous pouvez les convertir en .webp sur <NuxtLink to="https://convertio.co/fr/jpg-webp/">Convertio
+                    </NuxtLink></small>
+                <!-- Affichage des images existantes en mode édition -->
+                <div v-if="isEditing && articleForm.images && articleForm.images.length">
+                    <p>Images existantes :</p>
+                    <ul>
+                        <li v-for="(imgUrl, index) in articleForm.images" :key="`existing-${index}`">
+                            <img :src="imgUrl" :alt="'Image existante ' + (index + 1)" width="100">
+                            <button class="remove" type="button" @click="removeExistingImage(index)">Supprimer cette
+                                image</button>
+                        </li>
+                    </ul>
+                </div>
                 <!-- Affichage des images sélectionnées avant l'upload -->
                 <div v-if="selectedImages.length">
                     <p>Images sélectionnées :</p>
@@ -71,6 +82,7 @@
                 </div>
             </div>
 
+            <!-- Lien YouTube -->
             <div class="form-group">
                 <label>Lien YouTube (optionnel)</label>
                 <div class="yt-link">
@@ -78,12 +90,16 @@
                     <button class="add" type="button" @click="addYoutubeLink">+</button>
                 </div>
 
-                <ul v-if="articleForm.youtubeLinks">
-                    <li v-for="(link, index) in articleForm.youtubeLinks" :key="index">
-                        {{ link }}
-                        <button class="remove" @click="removeYoutubeLink(index)">x</button>
-                    </li>
-                </ul>
+                <!-- Partie modifiée pour s'assurer que les liens sont correctement affichés -->
+                <div v-if="articleForm.youtubeLinks && articleForm.youtubeLinks.length" class="youtube-links">
+                    <p>Liens ajoutés :</p>
+                    <ul>
+                        <li v-for="(link, index) in getYoutubeLinksArray()" :key="index">
+                            <a :href="link" target="_blank" rel="noopener noreferrer">{{ link }}</a>
+                            <button class="remove" type="button" @click="removeYoutubeLink(index)">x</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <button class="submit-button" type="submit">
@@ -94,7 +110,7 @@
         <!-- Modale -->
         <div class="show-modal" v-if="showModal">
             <div class="pop-modal">
-                <h2 style="margin-top: 0;">Article enregistré !</h2>
+                <h2 style="margin-top: 0;">Article {{ isEditing ? 'mis à jour' : 'enregistré' }} !</h2>
                 <p>Redirection en cours vers la liste des articles.</p>
             </div>
         </div>
@@ -102,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, Teleport } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import { useRouter } from 'vue-router'
@@ -159,9 +175,16 @@ const removeImage = (index) => {
     selectedImages.value.splice(index, 1)
 }
 
+// Supprimer une image existante (pour le mode édition)
+const removeExistingImage = (index) => {
+    if (articleForm.value.images) {
+        articleForm.value.images.splice(index, 1)
+    }
+}
+
 const uploadImagesToSupabase = async () => {
     uploadProgress.value = 0
-    articleForm.value.images = [] // Réinitialise le tableau des images
+    const newImages = [...(articleForm.value.images || [])] // Conserver les images existantes en mode édition
 
     try {
         const uploadPromises = selectedImages.value.map(async (imageObj, index) => {
@@ -185,7 +208,8 @@ const uploadImagesToSupabase = async () => {
         })
 
         // Attendre tous les uploads et stocker les URLs
-        articleForm.value.images = await Promise.all(uploadPromises)
+        const uploadedImages = await Promise.all(uploadPromises)
+        articleForm.value.images = [...newImages, ...uploadedImages]
 
         uploadProgress.value = 100 // Fin du téléchargement
     } catch (error) {
@@ -193,25 +217,47 @@ const uploadImagesToSupabase = async () => {
     }
 }
 
-// Gestion des liens YouTube
-const addYoutubeLink = () => {
-    if (!youtubeLink.value) return;
+// GESTION DES LIENS YOUTUBE
 
-    // Initialiser le tableau si c'est undefined
-    if (!articleForm.value.youtubeLinks) {
-        articleForm.value.youtubeLinks = [];
+// Fonction pour s'assurer que youtubeLinks est bien un tableau de chaînes
+const getYoutubeLinksArray = () => {
+  // Si youtubeLinks est déjà un tableau, le retourner
+  if (Array.isArray(articleForm.value.youtubeLinks)) {
+    return articleForm.value.youtubeLinks;
+  }
+  
+  // Si youtubeLinks est une chaîne, essayer de la parser comme JSON
+  if (typeof articleForm.value.youtubeLinks === 'string') {
+    try {
+      const parsed = JSON.parse(articleForm.value.youtubeLinks);
+      return Array.isArray(parsed) ? parsed : [articleForm.value.youtubeLinks];
+    } catch (e) {
+      // Si le parsing échoue, considérer la chaîne comme un lien unique
+      return [articleForm.value.youtubeLinks];
     }
+  }
+  
+  // Si youtubeLinks est undefined ou null, retourner un tableau vide
+  return [];
+}
 
-    // Ajouter le lien au tableau
-    articleForm.value.youtubeLinks.push(youtubeLink.value);
+// Ajouter un lien YouTube
+const addYoutubeLink = () => {
+  if (!youtubeLink.value) return;
 
-    // Vider l'input
-    youtubeLink.value = '';
+  const links = getYoutubeLinksArray();
+  links.push(youtubeLink.value);
+  articleForm.value.youtubeLinks = links;
+
+  // Vider l'input
+  youtubeLink.value = '';
 }
 
 // Fonction pour supprimer un lien
 const removeYoutubeLink = (index) => {
-    articleForm.value.youtubeLinks.splice(index, 1);
+  const links = getYoutubeLinksArray();
+  links.splice(index, 1);
+  articleForm.value.youtubeLinks = links;
 }
 
 // Nettoyer l'éditeur en quittant la page
@@ -236,15 +282,31 @@ const fetchCategories = async () => {
 
 // Charger l'article si on est en mode édition
 const fetchArticle = async () => {
-    const { data } = await supabase
+    if (!props.articleId) return
+    
+    const { data, error } = await supabase
         .from('Article')
         .select('*')
         .eq('id', props.articleId)
         .single()
 
+    if (error) {
+        console.error("Erreur lors du chargement de l'article :", error)
+        return
+    }
+
     if (data) {
-        articleForm.value = data
-        editor.value.commands.setContent(data.content || '') // Charger le contenu dans TipTap
+        // S'assurer que les tableaux sont initialisés même s'ils sont null dans les données
+        articleForm.value = {
+            ...data,
+            images: data.images || [],
+            youtubeLinks: data.youtubeLinks || []
+        }
+        
+        // Charger le contenu dans TipTap
+        if (editor.value && data.content) {
+            editor.value.commands.setContent(data.content || '')
+        }
     }
 }
 
@@ -253,8 +315,12 @@ const submitArticle = async () => {
     await uploadImagesToSupabase() // Upload les images avant d'enregistrer l'article
 
     const articleData = {
-        ...articleForm.value,
-        created_at: new Date()
+        ...articleForm.value
+    }
+    
+    // Ajouter created_at seulement en mode création
+    if (!isEditing.value) {
+        articleData.created_at = new Date().toISOString()
     }
 
     let error
@@ -263,24 +329,17 @@ const submitArticle = async () => {
     } else {
         ({ error } = await supabase.from('Article').insert(articleData))
     }
+    
     if (error) {
         console.error('Erreur ajout article:', error)
+        alert(`Erreur: ${error.message}`)
     }
     else {
         console.log('Affichage de la modale')
         showModal.value = true
         //Réinitialiser le formulaire après soumission
-        articleForm.value = {
-            title: '',
-            slug: '',
-            author: user.value?.email || '',
-            description: '',
-            content: '',
-            category_id: null,
-            images: [],
-            youtubeLinks: []
-        }
-
+        selectedImages.value = []
+        
         // ✅ Rediriger après 3 secondes
         setTimeout(() => {
             router.push("/espace-admin")
@@ -308,11 +367,11 @@ onMounted(() => {
 })
 
 useHead({
-    title: 'Espace Admin - Création d\'article',
+    title: `Espace Admin - ${isEditing.value ? 'Modification' : 'Création'} d'article`,
     meta: [
         {
             name: 'description',
-            content: 'Créez un nouvel article!'
+            content: `${isEditing.value ? 'Modifiez' : 'Créez'} un article!`
         }
     ]
 })
