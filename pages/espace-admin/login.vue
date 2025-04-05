@@ -1,8 +1,7 @@
 <template>
     <div class="login-container">
         <div class="login-form">
-            <h1>Connexion Administration</h1>
-
+            <h1>Espace admin</h1>
             <div v-if="errorMessage" class="error-message">
                 {{ errorMessage }}
             </div>
@@ -84,18 +83,16 @@ useHead({
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #f5f5f5;
+    .login-form {
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 }
 
-.login-form {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
 
 h1 {
     margin-bottom: 1.5rem;

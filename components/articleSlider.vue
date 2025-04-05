@@ -1,14 +1,22 @@
 <template>
     <div class="carousel">
-        <h2>{{ category.category }}</h2>
+        <h2>{{ categoryName }}</h2>
         <ClientOnly>
             <swiper-container ref="containerRef" class="sw">
                 <swiper-slide v-for="(article, idx) in slides" :key="idx">
                     <NuxtLink :to="'/nos-articles/' + article.slug" class="card-link">
                         <div class="card mb-4 ">
                             <div class="image">
-                                <img v-if="article.images.length > 0" :src="article.images[0].src" class="card-img-top"
-                                    alt="Image de l'article">
+                                <!-- Affichage adaptatif des images en fonction de leur format -->
+                                <template v-if="getImageSrc(article)">
+                                    <img :src="getImageSrc(article)" class="card-img-top" :alt="article.title">
+                                </template>
+                                <template v-else>
+                                    <!-- Image de remplacement si aucune image n'est disponible -->
+                                    <div class="placeholder-image">
+                                        <span>{{ article.title }}</span>
+                                    </div>
+                                </template>
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ article.title }}</h5>
@@ -36,18 +44,75 @@
 
 <script setup lang="ts">
 import { useSwiper } from '#imports'
-import articles from '~/content/articles';
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useArticles, type Article } from '~/composables/useArticles';
 
-const category = defineProps<{
-    category: string
+const props = defineProps<{
+    categoryId: number;
+    categoryName: string;
 }>()
 
-// Filtrer les articles de la catégorie unique
-const articleCategory = articles.filter(article => article.category === category.category);
+// Utilisation du composable pour récupérer les articles de Supabase
+const { getArticlesByCategory } = useArticles();
 
-const containerRef = ref(null)
-const slides = ref(articleCategory)
+// Référence pour le swiper
+const containerRef = ref(null);
+const slides = ref<Article[]>([]);
+
+// Fonction pour obtenir l'URL de l'image en fonction du format des données
+const getImageSrc = (article: Article): string | null => {
+    // Vérifie si les images sont définies
+    if (!article.images) return null;
+    
+    // Si images est une chaîne JSON, essayez de l'analyser
+    if (typeof article.images === 'string') {
+        try {
+            const parsedImages = JSON.parse(article.images);
+            if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+                return parsedImages[0].src;
+            }
+        } catch (e) {
+            console.error('Erreur lors de l\'analyse des images:', e);
+        }
+    }
+    
+    // Si images est déjà un tableau
+    if (Array.isArray(article.images) && article.images.length > 0) {
+        // Vérifier si c'est un tableau d'objets avec src
+        if (article.images[0].src) {
+            return article.images[0].src;
+        }
+        // Ou si c'est directement un tableau de chemins
+        if (typeof article.images[0] === 'string') {
+            return article.images[0];
+        }
+    }
+    
+    // Si images est un objet avec src
+    if (typeof article.images === 'object' && article.images !== null && 'src' in article.images) {
+        return article.images.src;
+    }
+    
+    // Aucun format d'image reconnu
+    return null;
+};
+
+// Charger les articles au montage du composant
+onMounted(async () => {
+    try {
+        // Récupérer les articles de cette catégorie depuis Supabase
+        const articlesData = await getArticlesByCategory(props.categoryId);
+        
+        // Log pour debug
+        console.log('Format des images:', articlesData.length > 0 ? articlesData[0].images : 'Aucun article');
+        
+        slides.value = articlesData;
+    } catch (error) {
+        console.error('Erreur lors du chargement des articles:', error);
+    }
+});
+
+// Configuration du swiper
 const swiper = useSwiper(containerRef, {
     slidesPerView: 1,
     loop: true,
@@ -73,7 +138,6 @@ const swiper = useSwiper(containerRef, {
             spaceBetween: 60,
         },
     },
-    
 })
 </script>
 
@@ -83,7 +147,6 @@ h2 {
 }
 .card-link:hover h5 {
         text-decoration: underline;
-
 }
 .carousel {
     margin-bottom: 50px;
@@ -96,33 +159,44 @@ h2 {
     display: flex;
     justify-content: space-evenly;
     margin-top: 20px;
-    button {
-        border: none;
-        padding: 10px 20px;
-        margin: 0 10px;
-        cursor: pointer;
-    }
 }
-
+.controls button {
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+}
 swiper-container {
     display: block;
     margin: 0 auto;
     overflow: hidden;
 }
-
 swiper-slide {
     display: block;
     width: auto;
 }
-
 .image {
     height: 200px;
     overflow: hidden;
-
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
 }
 </style>

@@ -1,9 +1,7 @@
 <template>
-  <div class="admin-header">
-    <h1>Liste des articles</h1>
-    <button @click="handleLogout" class="logout-btn">Déconnexion</button>
-  </div>
   <div class="article-list">
+    <NuxtLink to="/espace-admin/creation-article/" class="create-link">Créer un article</NuxtLink>
+    <h1>Liste des articles</h1>
     <ul>
       <li v-for="article in articles" :key="article.id">
         <div class="article-info">
@@ -18,7 +16,8 @@
         </div>
       </li>
     </ul>
-    <NuxtLink to="/espace-admin/creation-article/" class="create-link">Créer un article</NuxtLink>
+    <p>Pour des raisons de sécurité, merci de vous déconnecter à chaque fin de session.</p>
+    <button @click="handleLogout" class="logout-btn">Déconnexion</button>
   </div>
 </template>
 
@@ -95,13 +94,7 @@ definePageMeta({
 
 
 <style scoped>
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-
-  .logout-btn {
+.logout-btn {
   padding: 0.5rem 1rem;
   background-color: #ef4444;
   color: white;
@@ -110,7 +103,6 @@ definePageMeta({
   cursor: pointer;
 }
 
-}
 .article-list {
   width: 100%;
   margin-top: 16px;
@@ -126,7 +118,7 @@ definePageMeta({
     justify-content: center;
     gap: 3rem;
   }
-  
+
   ul {
     li {
       padding: 10px;
@@ -139,11 +131,11 @@ definePageMeta({
 
       p {
         margin: 0;
-        max-width: 400px; 
+        max-width: 400px;
         text-align: left;
-        word-wrap: break-word; 
+        word-wrap: break-word;
         overflow-wrap: break-word;
-        text-overflow: ellipsis; 
+        text-overflow: ellipsis;
       }
     }
   }
@@ -159,6 +151,7 @@ definePageMeta({
     font-weight: bold;
     border-radius: 5px;
     margin-top: 32px;
+    margin-bottom: 16px;
     text-decoration: none;
   }
 }

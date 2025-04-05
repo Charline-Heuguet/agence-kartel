@@ -1,17 +1,28 @@
 <template>
   <div class="container">
     <h1>Nos articles</h1>
-    <!-- Barre de catégories (Pastilles cliquables) -->
-    <div class="category-pills">
-      <button v-for="category in uniqueCategories" :key="category" @click="scrollToCategory(category)">
-        {{ category }}
-      </button>
-    </div>
-
     
-    <!-- Articles Slider -->
-    <div v-for="category in uniqueCategories" :key="category" :id="category">
-      <articleSlider :category="category" />
+    <!-- Barre de catégories (Pastilles cliquables) -->
+    <div v-if="loading" class="loading">
+      Chargement des catégories...
+    </div>
+    <div v-else-if="error" class="error">
+      {{ error }}
+    </div>
+    <div v-else class="category-pills">
+      <button 
+        v-for="(category, index) in categories" 
+        :key="category.id" 
+        @click="scrollToCategory(category.name)"
+        :class="index % 2 === 0 ? 'primary' : 'secondary'" 
+      >
+        {{ category.name }}
+      </button>
+    </div> 
+
+    <!-- Articles par catégorie -->
+    <div v-for="category in categories" :key="category.id" :id="category.name">
+      <articleSlider :category-id="category.id" :category-name="category.name" />
     </div>
 
     <!-- Bouton pour remonter en haut de la page -->
@@ -20,25 +31,29 @@
 </template>
 
 <script setup lang="ts">
-import articles from '~/content/articles';
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue';
 import arrowup from '~/components/ui/arrowup.vue';
+import { useArticles, type Category } from '~/composables/useArticles';
 
-// Récupérer les catégories existantes
-const categories = ref<string[]>([]);
+// Utilisation du composable
+const { loading, error, getActiveCategories } = useArticles();
 
-articles.forEach(article => {
-  categories.value.push(article.category);
+// État pour les catégories
+const categories = ref<Category[]>([]);
+
+// Charger les catégories au montage du composant
+onMounted(async () => {
+  try {
+    // Récupérer uniquement les catégories qui ont des articles
+    categories.value = await getActiveCategories();
+  } catch (err) {
+    console.error(err);
+  }
 });
-console.log(categories.value);
-
-// Remove duplicates categories
-const uniqueCategories = categories.value.filter((v, i, a) => a.indexOf(v) === i);
-console.log(uniqueCategories);
 
 // Fonction pour scroller vers une catégorie
-const scrollToCategory = (category: string) => {
-  const section = document.getElementById(category);
+const scrollToCategory = (categoryName: string) => {
+  const section = document.getElementById(categoryName);
   if (section) {
     section.scrollIntoView({ behavior: 'smooth' });
   }
@@ -58,27 +73,43 @@ useHead({
 <style scoped>
 .category-pills {
   display: flex;
-  gap: 80px;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
   justify-content: center;
-  margin: 40px 0 80px;
-  
-    button {
-    padding: 8px 12px;
-    border: none;
-    background-color: #212ea5;
-    color: white;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: 20px;
-  }
 }
 
-button:nth-child(even) {
+.category-pills button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 2rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-pills button:hover {
+  transform: translateY(-3px);
+}
+
+/* Style par défaut alternant entre deux couleurs */
+.category-pills button.primary {
+  background-color: #2828ab; /* Bleu foncé */
+  color: white;
+}
+
+.category-pills button.secondary {
+  background-color: #f5d742; /* Jaune */
   color: black;
-  background-color: #f6dc75;
 }
 
-button:hover {
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5); 
+.loading, .error {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #e74c3c;
 }
 </style>
