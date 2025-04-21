@@ -22,7 +22,7 @@
     </div>
   </div>
   <div class="line col-4 mx-auto my-5"></div>
-  <p class="mx-auto">N'hésitez pas à nous suivre sur nos réseaux sociaux pour ne rien perdre de nos dernères actualités !</p>
+  <p class="mx-auto">N'hésitez pas à nous suivre sur nos réseaux sociaux pour ne rien perdre de nos dernières actualités !</p>
   <div class="wrapper">
     <div class="button">
       <div class="icon">
