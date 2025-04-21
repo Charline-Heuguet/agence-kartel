@@ -28,14 +28,13 @@
                 :alt="article.title">
 
             <!-- Contenu de l'article -->
-            <p class="lead" v-html="article.content"></p>
+            <p class="content-article" v-html="article.content"></p>
 
             <!-- Images supplémentaires -->
-            <div v-if="getAdditionalImages(article).length > 0" class="mt-4">
+            <div v-if="getAdditionalImages(article).length > 0" class="mt-4 ">
                 <div class="row">
-                    <div v-for="(imageSrc, index) in getAdditionalImages(article)" :key="index"
-                        class="col-md-6 text-center mb-4">
-                        <img :src="imageSrc" class="img-fluid" :alt="article.title">
+                    <div v-for="(imageSrc, index) in getAdditionalImages(article)" :key="index" class="otherimages">
+                        <img :src="imageSrc" :alt="article.title">
                     </div>
                 </div>
             </div>
@@ -272,7 +271,6 @@ watch(() => article.value, () => {
 </script>
 
 <style scoped>
-
 .container {
     margin-bottom: 56px;
 }
@@ -283,6 +281,13 @@ watch(() => article.value, () => {
 
 .contenu-article {
     text-align: center;
+}
+
+.content-article {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin: 2rem 0;
+    text-align: justify;
 }
 
 .top-bar {
@@ -319,9 +324,23 @@ watch(() => article.value, () => {
 }
 
 .img-fluid {
-    max-width: 70%;
+    max-width: 40%;
     height: auto;
     border-radius: 10px;
+}
+.otherimages {
+    max-width: 50%;
+    height: auto;
+    border-radius: 10px;
+    margin: 0 auto;
+    text-align: center;
+    margin-bottom: 2rem;
+
+    img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
 }
 
 .category-badge {

@@ -5,7 +5,7 @@
             <swiper-container ref="containerRef" class="sw">
                 <swiper-slide v-for="(article, idx) in slides" :key="idx">
                     <NuxtLink :to="'/nos-articles/' + article.slug" class="card-link">
-                        <div class="card mb-4 ">
+                        <div class="card sliderarticle">
                             <div class="image">
                                 <!-- Affichage adaptatif des images en fonction de leur format -->
                                 <template v-if="getImageSrc(article)">
@@ -32,11 +32,11 @@
         <div v-if="slides.length > 3" class="controls">
             <!-- Go back one slide -->
             <button @click="swiper.prev()">
-                Prev
+                <
             </button>
             <!-- Go forward one slide -->
             <button @click="swiper.next()">
-                Next
+                >
             </button>
         </div>
     </div>
@@ -142,6 +142,9 @@ const swiper = useSwiper(containerRef, {
 </script>
 
 <style scoped lang="css">
+.sliderarticle{
+    margin-bottom: 56px;
+}
 .articlebody{
     padding: 10px;
 }
@@ -181,10 +184,7 @@ swiper-slide {
 .image {
     height: 200px;
     overflow: hidden;
-    background-color: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: #f5f5f5;;
 }
 .image img {
     width: 100%;

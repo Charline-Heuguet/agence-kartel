@@ -34,8 +34,8 @@ main {
     margin-bottom: 1rem;
   }
 
-  h2 {
-    font-size: 16px;
+  h2, h3, h4, h5, h6 {
+    font-size: 18px;
     margin-bottom: 1rem;
   }
 
