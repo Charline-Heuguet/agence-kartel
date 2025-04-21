@@ -20,14 +20,30 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
-main{
+main {
   min-height: calc(100vh - 174px - 85px);
   max-width: 1140px;
   margin: 0 auto;
+  text-align: center;
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 16px;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 1rem;
+  }
+
 }
 
 /* Largeur */

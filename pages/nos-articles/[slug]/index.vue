@@ -1,56 +1,61 @@
 <template>
-  <div class="container">
-    <NuxtLink to="/nos-articles" class="back-link">← Retour aux articles</NuxtLink>
-        
-    <div v-if="loading" class="loading text-center my-5">
-        Chargement de l'article...
+    <div class="top-bar">
+        <NuxtLink to="/nos-articles" class="back-link">← Retour aux articles</NuxtLink>
     </div>
-    <div v-else-if="error" class="error text-center my-5">
-        {{ error }}
-    </div>
-    <div v-else-if="article">        
-        <h1>{{ article.title }}</h1>
-        <h6 v-if="article.author" class="text-muted text-center">
-            Écrit par {{ article.author }} le {{ formatDate(article.created_at) }}
-        </h6>
-        
-        <div>
-            <span v-if="getCategoryName(article)" class="category-badge" :class="getCategoryClass(getCategoryName(article))">
-                {{ getCategoryName(article) }}
-            </span>
+
+    <div class="container">
+        <div v-if="loading" class="loading text-center my-5">
+            Chargement de l'article...
         </div>
+        <div v-else-if="error" class="error text-center my-5">
+            {{ error }}
+        </div>
+        <div v-else-if="article" class="contenu-article">
+            <h1>{{ article.title }}</h1>
+            <h2 v-if="article.author" class="author">
+                Écrit par {{ article.author }}
+            </h2>
 
-        <!-- Image principale -->
-        <img v-if="getMainImage(article)" :src="getMainImage(article)" class="img-fluid my-4 mx-auto d-block" :alt="article.title">
-        
-        <!-- Contenu de l'article -->
-        <div class="lead" v-html="article.content"></div>
+            <div>
+                <span v-if="getCategoryName(article)" class="category-badge"
+                    :class="getCategoryClass(getCategoryName(article))">
+                    {{ getCategoryName(article) }}
+                </span>
+            </div>
 
-        <!-- Images supplémentaires -->
-        <div v-if="getAdditionalImages(article).length > 0" class="mt-4">
-            <div class="row">
-                <div v-for="(imageSrc, index) in getAdditionalImages(article)" :key="index" class="col-md-6 text-center mb-4">
-                    <img :src="imageSrc" class="img-fluid" :alt="article.title">
+            <!-- Image principale -->
+            <img v-if="getMainImage(article)" :src="getMainImage(article) ?? ''" class="img-fluid my-4 mx-auto d-block"
+                :alt="article.title">
+
+            <!-- Contenu de l'article -->
+            <p class="lead" v-html="article.content"></p>
+
+            <!-- Images supplémentaires -->
+            <div v-if="getAdditionalImages(article).length > 0" class="mt-4">
+                <div class="row">
+                    <div v-for="(imageSrc, index) in getAdditionalImages(article)" :key="index"
+                        class="col-md-6 text-center mb-4">
+                        <img :src="imageSrc" class="img-fluid" :alt="article.title">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vidéos YouTube associées -->
+            <div v-if="hasYoutubeLinks">
+                <h3 class="text-center">Vidéos associées</h3>
+                <div class="video">
+                    <div v-for="(link, index) in embedLinks" :key="index" class="video-wrapper">
+                        <iframe :src="link" frameborder="0" allowfullscreen></iframe>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Vidéos YouTube associées -->
-        <div v-if="hasYoutubeLinks">
-            <h4>Vidéos associées</h4>
-            <div class="row">
-                <div v-for="(link, index) in embedLinks" :key="index" class="col-md-6 mb-4">
-                    <iframe :src="link" frameborder="0" allowfullscreen class="w-100" style="height: 300px;"></iframe>
-                </div>
-            </div>
+        <div v-else class="not-found text-center my-5">
+            <h4>Article introuvable</h4>
+            <p>Cet article n'existe pas ou a été supprimé.</p>
+            <NuxtLink to="/nos-articles" class="btn btn-primary mt-3">Voir tous les articles</NuxtLink>
         </div>
     </div>
-    <div v-else class="not-found text-center my-5">
-        <h2>Article introuvable</h2>
-        <p>Cet article n'existe pas ou a été supprimé.</p>
-        <NuxtLink to="/nos-articles" class="btn btn-primary mt-3">Voir tous les articles</NuxtLink>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -76,12 +81,12 @@ const normalizeYoutubeLinks = (article: Article): string[] => {
     if (!article.youtubeLinks) {
         return [];
     }
-    
+
     // Si youtubeLinks est déjà un tableau
     if (Array.isArray(article.youtubeLinks)) {
         return article.youtubeLinks.filter(link => link && typeof link === 'string' && link.trim() !== '');
     }
-    
+
     // Si youtubeLinks est une chaîne de caractères (peut-être un JSON stringifié)
     if (typeof article.youtubeLinks === 'string') {
         try {
@@ -95,14 +100,14 @@ const normalizeYoutubeLinks = (article: Article): string[] => {
             return trimmed ? [trimmed] : [];
         }
     }
-    
+
     return [];
 };
 
 // Computed property pour vérifier si l'article a des liens YouTube valides
 const hasYoutubeLinks = computed(() => {
     if (!article.value) return false;
-    
+
     const normalizedLinks = normalizeYoutubeLinks(article.value);
     return normalizedLinks.length > 0;
 });
@@ -110,9 +115,9 @@ const hasYoutubeLinks = computed(() => {
 // Computed property pour les liens YouTube en format d'embed
 const embedLinks = computed(() => {
     if (!article.value) return [];
-    
+
     const normalizedLinks = normalizeYoutubeLinks(article.value);
-    
+
     return normalizedLinks.map(link => {
         // Convertir les URLs YouTube normales en URLs d'embed
         if (link.includes('youtube.com/watch?v=')) {
@@ -121,12 +126,12 @@ const embedLinks = computed(() => {
                 return `https://www.youtube.com/embed/${videoId}`;
             }
         }
-        
+
         // Déjà un lien d'embed
         if (link.includes('youtube.com/embed/')) {
             return link;
         }
-        
+
         // Lien YouTube court (youtu.be)
         if (link.includes('youtu.be/')) {
             const videoId = link.split('youtu.be/')[1]?.split('?')[0];
@@ -134,7 +139,7 @@ const embedLinks = computed(() => {
                 return `https://www.youtube.com/embed/${videoId}`;
             }
         }
-        
+
         // Si aucun format reconnu, retourner le lien tel quel
         return link;
     });
@@ -146,7 +151,7 @@ const getCategoryName = (article: Article): string => {
     if (article.category && article.category.name) {
         return article.category.name;
     }
-    
+
     // Sinon, chercher la catégorie par ID
     const category = categories.value.find(c => c.id === article.category_id);
     return category ? category.name : '';
@@ -165,12 +170,12 @@ const getMainImage = (article: Article): string | null => {
             return article.images[0];
         }
     }
-    
+
     // Si images est un objet avec src
     if (typeof article.images === 'object' && article.images !== null && 'src' in article.images) {
         return article.images.src;
     }
-    
+
     return null;
 };
 
@@ -187,7 +192,7 @@ const getAdditionalImages = (article: Article): string[] => {
             return article.images.slice(1);
         }
     }
-    
+
     return [];
 };
 
@@ -204,10 +209,10 @@ const formatDate = (dateString: string) => {
 // Déterminer la classe CSS en fonction de la catégorie
 const getCategoryClass = (categoryName: string) => {
     if (!categoryName) return 'primary';
-    
+
     const category = categories.value.find(c => c.name === categoryName);
     if (!category) return 'primary';
-    
+
     const index = categories.value.indexOf(category);
     return index % 2 === 0 ? 'primary' : 'secondary';
 };
@@ -217,10 +222,10 @@ onMounted(async () => {
     try {
         // Charger toutes les catégories pour pouvoir déterminer la classe CSS
         categories.value = await getAllCategories();
-        
+
         // Essayer de récupérer l'article depuis Supabase
         const supabaseArticle = await getArticleBySlug(slug);
-        
+
         if (supabaseArticle) {
             // Si l'article existe dans Supabase, l'utiliser
             article.value = supabaseArticle;
@@ -267,16 +272,54 @@ watch(() => article.value, () => {
 </script>
 
 <style scoped>
-.back-link {
-    color: #2828ab;
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 32px;
-    float: left;
+
+.container {
+    margin-bottom: 56px;
+}
+.author {
+    font-style: italic;
+    color: gray;
+}
+
+.contenu-article {
+    text-align: center;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+
+    .back-link {
+        color: #2828ab;
+        text-decoration: none;
+        font-weight: 500;
+    }
+}
+
+.video {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    .video-wrapper {
+        max-width: 560px;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+
+        iframe {
+            width: 100%;
+            height: 315px;
+            border-radius: 10px;
+        }
+    }
 }
 
 .img-fluid {
-    max-width: 50%;
+    max-width: 70%;
     height: auto;
     border-radius: 10px;
 }
@@ -291,12 +334,14 @@ watch(() => article.value, () => {
 }
 
 .category-badge.primary {
-    background-color: #2828ab; /* Bleu foncé */
+    background-color: #2828ab;
+    /* Bleu foncé */
     color: white;
 }
 
 .category-badge.secondary {
-    background-color: #f5d742; /* Jaune */
+    background-color: #f5d742;
+    /* Jaune */
     color: black;
 }
 
@@ -305,7 +350,9 @@ watch(() => article.value, () => {
     font-size: 0.9rem;
 }
 
-.loading, .error, .not-found {
+.loading,
+.error,
+.not-found {
     margin: 3rem 0;
 }
 

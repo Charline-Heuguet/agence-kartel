@@ -1,5 +1,5 @@
 <template>
-    <div @click="scrollToTop">
+    <div class="arrowup" @click="scrollToTop">
         <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
             fill="#212EA5" stroke="#212EA5">
@@ -32,6 +32,9 @@ const scrollToTop = () => {
 </script>
 
 <style scoped>
+.arrowup{ 
+    margin-bottom: 90px;
+}
 svg {
     width: 40px;
     height: 40px;

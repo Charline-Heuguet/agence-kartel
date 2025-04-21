@@ -1,6 +1,6 @@
 <template>
   <div class="article-list">
-    <NuxtLink to="/espace-admin/creation-article/" class="create-link">Créer un article</NuxtLink>
+    
     <h1>Liste des articles</h1>
     <ul>
       <li v-for="article in articles" :key="article.id">
@@ -16,8 +16,12 @@
         </div>
       </li>
     </ul>
-    <p>Pour des raisons de sécurité, merci de vous déconnecter à chaque fin de session.</p>
-    <button @click="handleLogout" class="logout-btn">Déconnexion</button>
+    <NuxtLink to="/espace-admin/creation-article/" class="create-link">Créer un article</NuxtLink>
+    <div class="warning">
+      <p class="warningtext">
+        Pour des raisons de sécurité, merci de vous déconnecter à chaque fin de session.</p>
+        <button @click="handleLogout" class="logout-btn">Déconnexion</button>
+    </div>
   </div>
 </template>
 
@@ -94,13 +98,29 @@ definePageMeta({
 
 
 <style scoped>
-.logout-btn {
-  padding: 0.5rem 1rem;
-  background-color: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.warning{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fef2f2;
+  border-radius: 8px;
+
+  .warningtext {
+    color: #ef4444;
+    font-size: 1.2rem;
+  }
+  .logout-btn {
+    padding: 0.5rem 1rem;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
 }
 
 .article-list {
@@ -131,7 +151,7 @@ definePageMeta({
 
       p {
         margin: 0;
-        max-width: 400px;
+        max-width: 600px;
         text-align: left;
         word-wrap: break-word;
         overflow-wrap: break-word;

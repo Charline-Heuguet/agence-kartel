@@ -146,7 +146,7 @@ const youtubeLink = ref('')
 const articleForm = ref({
     title: '',
     slug: '',
-    author: user.value?.email || '',
+    author: '',
     description: '',
     content: '',
     category_id: '',
@@ -190,7 +190,7 @@ const uploadImagesToSupabase = async () => {
         const uploadPromises = selectedImages.value.map(async (imageObj, index) => {
             const file = imageObj.file
             const fileExt = file.name.split('.').pop()
-            const fileName = `article-${Date.now()}-${index}.${fileExt}` // Pas besoin de user.id
+            const fileName = `article-${Date.now()}-${index}.${fileExt}`
 
             // Uploader dans Supabase Storage
             const { data, error } = await supabase.storage

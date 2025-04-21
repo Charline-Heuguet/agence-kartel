@@ -18,9 +18,9 @@
                                     </div>
                                 </template>
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ article.title }}</h5>
-                                <p class="card-text">{{ article.description }}</p>
+                            <div class="articlebody" >
+                                <h5 class="articletitle">{{ article.title }}</h5>
+                                <p class="articledesc">{{ article.description }}</p>
                                 <span class="read-more">Voir la suite →</span>
                             </div>
                         </div>
@@ -142,6 +142,9 @@ const swiper = useSwiper(containerRef, {
 </script>
 
 <style scoped lang="css">
+.articlebody{
+    padding: 10px;
+}
 h2 {
     text-align: start;
 }
