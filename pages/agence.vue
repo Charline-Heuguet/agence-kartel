@@ -89,7 +89,7 @@
 
   </div>
 </template>
-<script>
+<script setup>
 useHead({
   title: 'L\'Agence Kartel',
   meta: [
