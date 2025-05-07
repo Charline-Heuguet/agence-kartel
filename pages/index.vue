@@ -10,7 +10,7 @@
     </div>
     <img src="/assets/images/nuit_etoile.webp" class="w-25 nuit" alt="nuit">
     <div class="container">
-      <div class="d-flex jsutify-content-center mt-5 mx-5">
+      <div class="d-flex mt-5 ">
         <p>Bienvenue sur la page d'accueil de Kartel, votre passerelle vers une exploration dynamique de la culture sous
           toutes ses formes ! En tant qu'association dévouée à la médiatisation et à la vulgarisation culturelle, nous
           sommes ici pour vous guider à travers un voyage passionnant où l'art, la musique, la littérature, et bien plus
@@ -75,7 +75,6 @@ a {
 }
 
 .police {
-  font-family: 'Lettown Hills';
   font-weight: 900 !important;
 }
 

@@ -103,7 +103,6 @@ useHead({
 
 <style scoped>
 .police {
-  font-family: 'Lettown Hills';
   font-weight: 900 !important;
 }
 

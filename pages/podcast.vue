@@ -79,7 +79,6 @@ p{
   text-align: justify;
 }
 .police {
-  font-family: 'Lettown Hills';
   font-weight: 900 !important;
 }
 .pill-bleu {
