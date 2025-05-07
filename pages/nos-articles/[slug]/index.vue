@@ -24,7 +24,7 @@
             </div>
 
             <!-- Image principale -->
-            <img v-if="getMainImage(article)" :src="getMainImage(article) ?? ''" class="img-fluid my-4 mx-auto d-block"
+            <img v-if="getMainImage(article)" :src="getMainImage(article) ?? ''" class="img-fluid mt-4 d-block"
                 :alt="article.title">
 
             <!-- Contenu de l'article -->
@@ -61,7 +61,6 @@
 import { useRoute } from 'vue-router';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useArticles, type Article, type Category } from '~/composables/useArticles';
-import articlesJson from '~/content/articles'; // Import du JSON d'articles existant pour la transition
 
 // Récupérer le slug de l'article depuis l'URL
 const route = useRoute();
@@ -231,13 +230,6 @@ onMounted(async () => {
             console.log('Article récupéré depuis Supabase:', supabaseArticle);
             // Afficher les liens youtube pour debug
             console.log('YouTube links:', normalizeYoutubeLinks(supabaseArticle));
-        } else {
-            // Sinon, chercher dans le JSON local (pour la transition)
-            const localArticle = articlesJson.find(a => a.slug === slug);
-            if (localArticle) {
-                article.value = localArticle as unknown as Article;
-                console.log('Article récupéré depuis JSON local:', localArticle);
-            }
         }
     } catch (err) {
         console.error(err);
@@ -324,9 +316,11 @@ watch(() => article.value, () => {
 }
 
 .img-fluid {
-    max-width: 40%;
+    float: left;
+    max-width: 33%;
     height: auto;
     border-radius: 10px;
+    margin-right: 2rem;
 }
 .otherimages {
     max-width: 50%;
