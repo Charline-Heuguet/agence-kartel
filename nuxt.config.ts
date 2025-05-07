@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         lang: 'fr',
       },
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/x-icon', href: '/kartel-logo.svg' },
       ]
     }
   },

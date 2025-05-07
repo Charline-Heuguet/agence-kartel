@@ -4,7 +4,7 @@
 
     <logoKartel />
 
-    <p class="presentation" style="width: 50%">L’agence Kartel, c’est nous, un groupe de jeunes avec la soif d’expériences. Nous avons tous
+    <p class="presentation">L’agence Kartel, c’est nous, un groupe de jeunes avec la soif d’expériences. Nous avons tous
       des compétences et parcours différents, mais un point commun : une sensibilité au monde de l’art. <br><br>Fondée
       en 2021, l'association Kartel s'engage résolument dans la médiation et la vulgarisation culturelle. Animés par une
       passion commune pour l'art, nous croyons en son pouvoir unificateur et enrichissant pour la société. Notre mission
@@ -109,7 +109,6 @@ useHead({
 
 .presentation{
   margin: 0 auto;
-  text-align: justify;
 }
 
 .card {

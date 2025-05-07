@@ -1,5 +1,5 @@
 <template>
-    <div class=" mx-2 d-flex justify-content-center mt-3">
+    <div class="mx-4 d-flex justify-content-center mt-3">
         <div class="row my-auto">
           <div class="col-4 d-none d-md-block mt-4">
             <div class="col-12 mb-4 mx-auto">
